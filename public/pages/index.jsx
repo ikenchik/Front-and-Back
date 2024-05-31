@@ -1,29 +1,28 @@
 import "../CSS/normalize.css";
 import "../CSS/style_1.css"
-import "../CSS/style_about.css"
 import React from "react";
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
-function index() {
+
+function Index() {
     document.title = "Новости"; //header я сперла у Лехи (надеюсь я не все сломала) 0_0
   return (
     <div className="about_us">
       <header className="header">
-        <a href="/main" className="header-logo">
+        <Link to="/home" className="header-logo">
           <img src="img/LOGO.svg" className="logo" alt="Logo" /> //лого
-        </a>
+        </Link>
         <ul className="header-menu"> //навигация и вход
-          <a href="index.html"> //нужно заменить маршрутизацию после появления компонента главной страницы
-            <div className="button">Новости</div>
-          </a>
+          <Link to="/home" className="button">Новости</Link>
           <div className="button">База подкастов</div>
-          <a href="./AboutUs.jsx"> //необходимо заменить маршрутизацию
-            <div className="button">О проекте</div>
-          </a>
-          <a href="lk.html"> //необходимо заменить маршрутизацию
-            <div className="button_lk">Вход</div>
-          </a>
+          <Link to="/aboutus" className="button">О проекте</Link>
+          <Link to="/lk" className="button_lk">Вход</Link>
         </ul>
       </header>
+
+      <Route path="/home" component={Index.jsx} />
+      <Route path="/aboutus" component={AboutUs.jsx} />
+      <Route path="/lk" component={lk.jsx} />
   
         <main className="body">
           <div className="divider"></div>
@@ -74,4 +73,4 @@ function index() {
     );
   }
   
-  export default index;
+  export default Index;
