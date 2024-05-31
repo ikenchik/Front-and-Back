@@ -24,22 +24,20 @@ const Login = () => {
   return (
     <div className="container">
         <header className="header">
-        <a href="/main" className="header-logo">
+        <Link to="/home" className="header-logo">
           <img src="img/LOGO.svg" className="logo" alt="Logo" /> //лого
-        </a>
-        <ul className="header-menu">
-          <a href="index.jsx"> 
-            <div className="button">Новости</div>
-          </a>
+        </Link>
+        <ul className="header-menu"> //навигация и вход
+          <Link to="/home" className="button">Новости</Link>
           <div className="button">База подкастов</div>
-          <a href="./AboutUs.jsx"> 
-            <div className="button">О проекте</div>
-          </a>
-          <a href="lk.jsx"> 
-            <div className="button_lk">Вход</div>
-          </a>
+          <Link to="/aboutus" className="button">О проекте</Link>
+          <Link to="/lk" className="button_lk">Вход</Link>
         </ul>
       </header>
+
+      <Route path="/home" component={Index.jsx} />
+      <Route path="/aboutus" component={AboutUs.jsx} />
+      <Route path="/lk" component={lk.jsx} />
 
       <h1>Вход в личный кабинет</h1>
       <form id="login-form" onSubmit={handleSubmit}>
