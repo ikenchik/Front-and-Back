@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 function Index() {
     document.title = "Новости"; //header я сперла у Лехи (надеюсь я не все сломала) 0_0
   return (
-    <div className="about_us">
+    <div className="index">
       <header className="header">
         <Link to="/home" className="header-logo">
           <img src="img/LOGO.svg" className="logo" alt="Logo" /> //лого
