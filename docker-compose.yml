@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: postgres
+      DB_HOST: db
+      DB_DATABASE: Podcast_Basement
+      DB_PASSWORD: Googleapple123
+      DB_PORT: 5432
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_DB: Podcast_Basement
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Googleapple123
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

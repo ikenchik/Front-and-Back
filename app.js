@@ -1,64 +1,56 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const pool = require('./db');
 
 const app = express();
 const jsonParser = express.json();
 
-app.use(express.static(__dirname + "/public/img"));
-app.use(express.static(__dirname + "/public"));
+app.use(jsonParser);
 
-app.use("/main",function (_, response) {
-  response.redirect("/")
+// API для главной страницы
+app.get("/", (req, res) => {
+  res.json({ message: "Это API Главной Страницы" });
 });
 
-let users = [];
+// API для страницы входа
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
 
-app.get("/", function(request, response){
-  response.sendFile(__dirname + "/public/index.html");
-});
-
-app.get("/login", function(request, response){
-  response.sendFile(__dirname + "/public/lk.html");
-});
-app.post('/login', jsonParser, (req, res) => {
-  let userEmail = req.body.email;
-  let userPassword = req.body.password;
-
-  let user = users.find(user => user.email === userEmail && user.password === userPassword);
-
-  if (user) {
-    res.send({ success: 'Успешный вход!' });
-  } else {
-    res.status(400).send({ error: 'Некорректно введен email или пароль.' });
-    return;
+  try {
+    const result = await pool.query('SELECT * FROM Users WHERE user_email = $1 AND user_password = $2', [email, password]);
+    if (result.rows.length > 0) {
+      res.send({ success: 'Успешный вход!' });
+    } else {
+      res.status(400).send({ error: 'Некорректно введен email или пароль.' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Ошибка сервера. Попробуйте еще раз позже.' });
   }
 });
 
-app.get("/about", function(request, response){
-  response.sendFile(__dirname + "/public/aboutus.html")
-})
+// API для страницы регистрации
+app.post('/register', async (req, res) => {
+  const { email, password } = req.body;
 
-app.get("/register", function(request, response){
-  response.sendFile(__dirname + "/public/reg.html");
-});
-app.post('/register', jsonParser, (req, res) => {
-  // Проверяем, существует ли пользователь с таким электронной почтой
-  const existingUser = users.find(u => u.email === req.body.email);
+  try {
+    const existingUser = await pool.query('SELECT * FROM Users WHERE user_email = $1', [email]);
 
-  // Если такой пользователь уже существует, возвращаем ошибку
-  if(existingUser) {
-    res.status(400).send({ error: 'Пользователь с таким email уже существует.' });
-    return;
+    if (existingUser.rows.length > 0) {
+      res.status(400).send({ error: 'Пользователь с таким email уже существует.' });
+    } else {
+      await pool.query('INSERT INTO Users (user_email, user_password) VALUES ($1, $2)', [email, password]);
+      res.send({ success: 'Пользователь успешно зарегистрирован!' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Ошибка сервера. Попробуйте еще раз позже.' });
   }
-
-  // Если все в порядке, добавляем пользователя в "базу данных"
-  users.push({ email: req.body.email, password: req.body.password });
-  res.send({ success: 'Пользователь успешно зарегистрирован!' });
-  console.log(users);
 });
 
-app.use((request, response, next) => {
-  response.status(404).sendFile(__dirname + "/public/error404.html");
+// Обработчик 404
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ресурс не найден' });
 });
 
 app.listen(3000, () => console.log('The server is running on http://localhost:3000'));
